@@ -19,7 +19,14 @@ const products = productsFromServer.map((product) => {
   };
 });
 
-const getPreparedProducts = (selectedUser, query) => {
+const SORT_BY = {
+  ID: 'id',
+  PRODUCT: 'product',
+  CATEGORY: 'category',
+  USER: 'user',
+};
+
+const getPreparedProducts = (selectedUser, query, sortField) => {
   let preparedProducts = [...products];
 
   if (query) {
@@ -34,14 +41,36 @@ const getPreparedProducts = (selectedUser, query) => {
       .filter(product => product.category.ownerId === selectedUser);
   }
 
+  if (sortField) {
+    preparedProducts.sort((product1, product2) => {
+      switch (sortField) {
+        case SORT_BY.PRODUCT:
+          return product1.name.localeCompare(product2.name);
+
+        case SORT_BY.CATEGORY:
+          return product1.category.title.localeCompare(product2.category.title);
+
+        case SORT_BY.USER:
+          return product1.user.name.localeCompare(product2.user.name);
+
+        case SORT_BY.ID:
+          return product1.id - product2.id;
+
+        default:
+          return preparedProducts;
+      }
+    });
+  }
+
   return preparedProducts;
 };
 
 export const App = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [query, setQuery] = useState('');
+  const [sortField, setSortField] = useState('');
 
-  const visibleProducts = getPreparedProducts(selectedUser, query);
+  const visibleProducts = getPreparedProducts(selectedUser, query, sortField);
 
   return (
     <div className="section">
@@ -158,6 +187,11 @@ export const App = () => {
                 data-cy="ResetAllButton"
                 href="#/"
                 className="button is-link is-outlined is-fullwidth"
+                onClick={() => {
+                  setQuery('');
+                  setSelectedUser(null);
+                  setSortField('');
+                }}
               >
                 Reset all filters
               </a>
@@ -181,7 +215,12 @@ export const App = () => {
                     <span className="is-flex is-flex-wrap-nowrap">
                       ID
 
-                      <a href="#/">
+                      <a
+                        href="#/"
+                        onClick={() => {
+                          setSortField(SORT_BY.ID);
+                        }}
+                      >
                         <span className="icon">
                           <i data-cy="SortIcon" className="fas fa-sort" />
                         </span>
@@ -193,7 +232,12 @@ export const App = () => {
                     <span className="is-flex is-flex-wrap-nowrap">
                       Product
 
-                      <a href="#/">
+                      <a
+                        href="#/"
+                        onClick={() => {
+                          setSortField(SORT_BY.PRODUCT);
+                        }}
+                      >
                         <span className="icon">
                           <i data-cy="SortIcon" className="fas fa-sort-down" />
                         </span>
@@ -205,7 +249,12 @@ export const App = () => {
                     <span className="is-flex is-flex-wrap-nowrap">
                       Category
 
-                      <a href="#/">
+                      <a
+                        href="#/"
+                        onClick={() => {
+                          setSortField(SORT_BY.CATEGORY);
+                        }}
+                      >
                         <span className="icon">
                           <i data-cy="SortIcon" className="fas fa-sort-up" />
                         </span>
@@ -217,7 +266,12 @@ export const App = () => {
                     <span className="is-flex is-flex-wrap-nowrap">
                       User
 
-                      <a href="#/">
+                      <a
+                        href="#/"
+                        onClick={() => {
+                          setSortField(SORT_BY.USER);
+                        }}
+                      >
                         <span className="icon">
                           <i data-cy="SortIcon" className="fas fa-sort" />
                         </span>
