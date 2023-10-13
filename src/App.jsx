@@ -67,11 +67,11 @@ export const App = () => {
           break;
 
         case SORT_BY_CATEGORY:
-          result = a.sortCategory - b.sortCategory;
+          result  = a.category.title.localeCompare(b.category.title);
           break;
 
         case SORT_BY_USER:
-          result = a.sortUser - b.sortUser;
+          result  = a.user.name.localeCompare(b.user.name);
           break;
 
         default:
