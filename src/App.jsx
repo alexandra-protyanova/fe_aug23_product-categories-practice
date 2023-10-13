@@ -43,13 +43,40 @@ function filterProducts(productsTable, filterByUser, filterByCategory, query) {
   return filteredProducts;
 }
 
+function sortProducts(visibleProducts, sortByColumn, isSortReversed) {
+  const sortedProducts = [...visibleProducts];
+
+  if (sortByColumn) {
+    sortedProducts.sort((product1, product2) => {
+      switch (sortByColumn) {
+        case 'id':
+          return product1.id - product2.id;
+        case 'product':
+          return product1.name.localeCompare(product2.name);
+        case 'category':
+          return product1.category.title.localeCompare(product2.category.title);
+        case 'user':
+          return product1.user.name.localeCompare(product2.user.name);
+        default: return 0;
+      }
+    });
+  }
+
+  return isSortReversed ? sortedProducts.reverse() : sortedProducts;
+}
+
 export const App = () => {
   const [filterByUser, setFilterByUser] = useState('all');
   const [filterByCategories, setFilterByCategories] = useState([]);
   const [query, setQuery] = useState('');
+  const [sortByColumn, setSortByColumn] = useState('');
+  const [isSortReversed, setIsSortReversed] = useState(false);
 
   const visibleProducts
     = filterProducts(products, filterByUser, filterByCategories, query);
+
+  const productsToRender
+    = sortProducts(visibleProducts, sortByColumn, isSortReversed);
 
   const handleCategoriesClick = (categId) => {
     if (filterByCategories.includes(categId)) {
@@ -60,6 +87,19 @@ export const App = () => {
         categId,
       ]);
     }
+  };
+
+  const handleSortClick = (sortBy) => {
+    if (sortByColumn === sortBy) {
+      setIsSortReversed(true);
+    }
+
+    if (isSortReversed) {
+      setSortByColumn('');
+      setIsSortReversed(false);
+    }
+
+    setSortByColumn(sortBy);
   };
 
   return (
@@ -168,7 +208,7 @@ export const App = () => {
         </div>
 
         <div className="box table-container">
-          {visibleProducts.length === 0
+          {productsToRender.length === 0
             ? (
               <p data-cy="NoMatchingMessage">
                 No products matching selected criteria
@@ -187,7 +227,12 @@ export const App = () => {
 
                         <a href="#/">
                           <span className="icon">
-                            <i data-cy="SortIcon" className="fas fa-sort" />
+                            <i
+                              data-cy="SortIcon"
+                              className="fas fa-sort"
+                              role="presentation"
+                              onClick={() => handleSortClick('id')}
+                            />
                           </span>
                         </a>
                       </span>
@@ -201,7 +246,9 @@ export const App = () => {
                           <span className="icon">
                             <i
                               data-cy="SortIcon"
-                              className="fas fa-sort-down"
+                              className="fas fa-sort"
+                              role="presentation"
+                              onClick={() => handleSortClick('product')}
                             />
                           </span>
                         </a>
@@ -214,7 +261,12 @@ export const App = () => {
 
                         <a href="#/">
                           <span className="icon">
-                            <i data-cy="SortIcon" className="fas fa-sort-up" />
+                            <i
+                              data-cy="SortIcon"
+                              className="fas fa-sort"
+                              role="presentation"
+                              onClick={() => handleSortClick('category')}
+                            />
                           </span>
                         </a>
                       </span>
@@ -226,7 +278,12 @@ export const App = () => {
 
                         <a href="#/">
                           <span className="icon">
-                            <i data-cy="SortIcon" className="fas fa-sort" />
+                            <i
+                              data-cy="SortIcon"
+                              className="fas fa-sort"
+                              role="presentation"
+                              onClick={() => handleSortClick('user')}
+                            />
                           </span>
                         </a>
                       </span>
@@ -235,7 +292,7 @@ export const App = () => {
                 </thead>
 
                 <tbody>
-                  {visibleProducts.map((product) => {
+                  {productsToRender.map((product) => {
                     const {
                       id,
                       name,
