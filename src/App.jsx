@@ -33,9 +33,9 @@ function getPreparedProducts(items, { user, searchedProduct, category }) {
         .toLowerCase().includes(normalizedSearchedProduct));
   }
 
-  if (category) {
+  if (category.length !== 0) {
     preparedProducts = preparedProducts
-      .filter(product => product.categoryId === category);
+      .filter(product => category.includes(product.categoryId));
   }
 
   return preparedProducts;
@@ -45,14 +45,20 @@ export const App = () => {
   const [sortProducts, setSortProducts] = useState({
     user: null,
     searchedProduct: null,
-    category: null,
+    category: [],
   });
   const visibleProducts = getPreparedProducts(products, sortProducts);
 
   const updateSortProductsKey = (key, newValue) => {
     const updateProducts = { ...sortProducts };
 
-    updateProducts[key] = newValue;
+    if (key === 'category' && !(newValue instanceof Array)) {
+      updateProducts[key] = updateProducts[key].includes(newValue)
+        ? updateProducts[key].filter(value => value !== newValue)
+        : [...updateProducts[key], newValue];
+    } else {
+      updateProducts[key] = newValue;
+    }
 
     setSortProducts(updateProducts);
   };
@@ -132,8 +138,9 @@ export const App = () => {
                 href="#/"
                 data-cy="AllCategories"
                 className={cn('button is-success mr-6', {
-                  'is-outlined': sortProducts.category,
+                  'is-outlined': sortProducts.category.length,
                 })}
+                onClick={() => updateSortProductsKey('category', [])}
               >
                 All
               </a>
@@ -142,7 +149,7 @@ export const App = () => {
                 <a
                   data-cy="Category"
                   className={cn('button mr-2 my-1', {
-                    'is-info': category.id === sortProducts.category,
+                    'is-info': sortProducts.category.includes(category.id),
                   })}
                   href="#/"
                   onClick={() => updateSortProductsKey('category', category.id)}
@@ -160,7 +167,7 @@ export const App = () => {
                 onClick={() => setSortProducts({
                   user: null,
                   searchedProduct: null,
-                  category: null,
+                  category: [],
                 })}
               >
                 Reset all filters
