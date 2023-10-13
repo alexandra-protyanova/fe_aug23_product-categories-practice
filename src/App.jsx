@@ -13,7 +13,7 @@ import productsFromServer from './api/products';
 //   return null;
 // });
 
-function setFilteredProducts(productList, { selectedUser }) {
+function setFilteredProducts(productList, { selectedUser, query }) {
   const filteredUsers
   = usersFromServer.filter(user => user.name
   === selectedUser || selectedUser === 'All');
@@ -25,7 +25,8 @@ function setFilteredProducts(productList, { selectedUser }) {
   = productList.filter(
     product => filteredCategories.find(
       category => category.id === product.categoryId,
-    ),
+    )
+    && product.name.toLowerCase().includes(query.toLowerCase()),
   );
 
   return filteredProducts;
@@ -33,8 +34,9 @@ function setFilteredProducts(productList, { selectedUser }) {
 
 export const App = () => {
   const [selectedUser, setSelectedUser] = useState('All');
+  const [query, setQuery] = useState('');
   const filteredProducts
-  = setFilteredProducts(productsFromServer, { selectedUser });
+  = setFilteredProducts(productsFromServer, { selectedUser, query });
 
   return (
     <div className="section">
@@ -49,6 +51,7 @@ export const App = () => {
               <a
                 data-cy="FilterAllUsers"
                 href="#/"
+                className={selectedUser === 'All' && 'is-active'}
                 onClick={() => setSelectedUser('All')}
               >
                 All
@@ -58,6 +61,7 @@ export const App = () => {
                 <a
                   data-cy="FilterUser"
                   href="#/"
+                  className={selectedUser === user.name && 'is-active'}
                   key={user.id}
                   onClick={() => setSelectedUser(user.name)}
                 >
@@ -73,7 +77,7 @@ export const App = () => {
                   type="text"
                   className="input"
                   placeholder="Search"
-                  value="qwe"
+                  onChange={event => setQuery(event.target.value)}
                 />
 
                 <span className="icon is-left">
@@ -82,11 +86,14 @@ export const App = () => {
 
                 <span className="icon is-right">
                   {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
-                  <button
-                    data-cy="ClearButton"
-                    type="button"
-                    className="delete"
-                  />
+                  {query === '' ? '' : (
+                    <button
+                      data-cy="ClearButton"
+                      type="button"
+                      className="delete"
+                      onClick={() => setQuery('')}
+                    />
+                  )}
                 </span>
               </p>
             </div>
