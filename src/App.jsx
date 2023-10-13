@@ -239,7 +239,8 @@ export const App = () => {
 
                   {product.category && (
                   <td data-cy="ProductCategory">
-                    {`${product.category.icon} - ${product.category.title}`}</td>
+                    {`${product.category.icon} - ${product.category.title}`}
+                  </td>
                   )}
 
                   {product.user && (
