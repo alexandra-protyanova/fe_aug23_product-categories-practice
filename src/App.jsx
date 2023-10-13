@@ -133,6 +133,7 @@ export const App = () => {
                   href="#/"
                   className={cn({ 'is-active': selectedUserId === user.id })}
                   onClick={() => setSelectedUser(user.id)}
+                  key={user.id}
                 >
                   {user.name}
                 </a>
@@ -185,6 +186,7 @@ export const App = () => {
 
               {categoriesFromServer.map(category => (
                 <a
+                  key={category.id}
                   data-cy="Category"
                   className={cn(
                     'button',
@@ -380,7 +382,7 @@ export const App = () => {
 
                 <tbody>
                   {sortedProducts.map(product => (
-                    <tr data-cy="Product">
+                    <tr key={product.id} data-cy="Product">
                       <td className="has-text-weight-bold" data-cy="ProductId">
                         {product.id}
                       </td>
