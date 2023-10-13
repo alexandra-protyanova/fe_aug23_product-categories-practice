@@ -1,17 +1,25 @@
 /* eslint-disable jsx-a11y/accessible-emoji */
 import React from 'react';
+import cn from 'classnames';
 import './App.scss';
 
-// import usersFromServer from './api/users';
-// import categoriesFromServer from './api/categories';
-// import productsFromServer from './api/products';
+import usersFromServer from './api/users';
+import categoriesFromServer from './api/categories';
+import productsFromServer from './api/products';
 
-// const products = productsFromServer.map((product) => {
-//   const category = null; // find by product.categoryId
-//   const user = null; // find by category.ownerId
+const products = productsFromServer.map((product) => {
+  const category = categoriesFromServer
+    .find(categoryData => categoryData.id === product.categoryId);
 
-//   return null;
-// });
+  const user = usersFromServer
+    .find(userData => userData.id === category.ownerId);
+
+  return {
+    ...product,
+    category,
+    user,
+  };
+});
 
 export const App = () => (
   <div className="section">
@@ -193,7 +201,39 @@ export const App = () => (
           </thead>
 
           <tbody>
-            <tr data-cy="Product">
+            {products.map((product) => {
+              const {
+                id,
+                name,
+                category: { icon, title },
+                user: { name: userName, sex },
+              } = product;
+
+              return (
+                <tr data-cy="Product">
+                  <td className="has-text-weight-bold" data-cy="ProductId">
+                    {id}
+                  </td>
+
+                  <td data-cy="ProductName">{name}</td>
+                  <td data-cy="ProductCategory">
+                    {`${icon} - ${title}`}
+                  </td>
+
+                  <td
+                    data-cy="ProductUser"
+                    className={cn({
+                      'has-text-link': sex === 'm',
+                      'has-text-danger': sex === 'f',
+                    })}
+                  >
+                    {userName}
+                  </td>
+                </tr>
+              );
+            })}
+
+            {/* <tr data-cy="Product">
               <td className="has-text-weight-bold" data-cy="ProductId">
                 1
               </td>
@@ -239,7 +279,7 @@ export const App = () => (
               >
                 Roma
               </td>
-            </tr>
+            </tr> */}
           </tbody>
         </table>
       </div>
