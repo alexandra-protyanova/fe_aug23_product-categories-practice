@@ -17,20 +17,39 @@ const products = productsFromServer.map(product => ({
         === user.id),
 }));
 
-function getPreparedProducts(items, sortField) {
+function getPreparedProducts(items, { user, searchedProduct }) {
   let preparedProducts = [...items];
 
-  if (sortField) {
+  if (user) {
     preparedProducts = preparedProducts
-      .filter(product => product.user.name === sortField);
+      .filter(product => product.user.id === user);
+  }
+
+  if (searchedProduct) {
+    const normalizedSearchedProduct = searchedProduct.trim().toLowerCase();
+
+    preparedProducts = preparedProducts
+      .filter(product => product.name
+        .toLowerCase().includes(normalizedSearchedProduct));
   }
 
   return preparedProducts;
 }
 
 export const App = () => {
-  const [sortField, setSortField] = useState('');
-  const visibleProducts = getPreparedProducts(products, sortField);
+  const [sortProducts, setSortProducts] = useState({
+    user: null,
+    searchedProduct: null,
+  });
+  const visibleProducts = getPreparedProducts(products, sortProducts);
+
+  const updateSortProductsKey = (key, newValue) => {
+    const updateProducts = { ...sortProducts };
+
+    updateProducts[key] = newValue;
+
+    setSortProducts(updateProducts);
+  };
 
   return (
     <div className="section">
@@ -46,9 +65,9 @@ export const App = () => {
                 data-cy="FilterAllUsers"
                 href="#/"
                 className={cn({
-                  'is-active': !sortField,
+                  'is-active': !sortProducts.user,
                 })}
-                onClick={() => setSortField('')}
+                onClick={() => updateSortProductsKey('user', null)}
               >
                 All
               </a>
@@ -59,9 +78,9 @@ export const App = () => {
                   href="#/"
                   key={user.id}
                   className={cn({
-                    'is-active': user.name === sortField,
+                    'is-active': user.id === sortProducts.user,
                   })}
-                  onClick={() => setSortField(user.name)}
+                  onClick={() => updateSortProductsKey('user', user.id)}
                 >
                   {user.name}
                 </a>
@@ -75,7 +94,10 @@ export const App = () => {
                   type="text"
                   className="input"
                   placeholder="Search"
-                  value="qwe"
+                  value={sortProducts.searchedProduct || ''}
+                  onChange={event => updateSortProductsKey(
+                    'searchedProduct', event.currentTarget.value,
+                  )}
                 />
 
                 <span className="icon is-left">
@@ -84,11 +106,17 @@ export const App = () => {
 
                 <span className="icon is-right">
                   {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
-                  <button
-                    data-cy="ClearButton"
-                    type="button"
-                    className="delete"
-                  />
+                  {sortProducts.searchedProduct && (
+                    <button
+                      data-cy="ClearButton"
+                      id="ClearButton"
+                      type="button"
+                      className="delete"
+                      onClick={() => {
+                        updateSortProductsKey('searchedProduct', null);
+                      }}
+                    />
+                  )}
                 </span>
               </p>
             </div>
