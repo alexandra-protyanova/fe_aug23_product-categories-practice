@@ -33,7 +33,7 @@ Implement as many options below as you can:
 ## Instructions
 - Fork, clone, and run `npm i`
 - fix the DEMO LINK below (use your GitHub username and the repo name)
-  - [DEMO LINK](https://A1eeex.github.io/https://github.com/A1eeex/react_movies-list-filter-js/tree/develop)
+  - [DEMO LINK](https://A1eeex.github.io/react_static-list-of-posts-js)
 - implement tasks one by one (You can do it in the `App.jsx`)
 - `commit`, `push`, and `deploy` after each task
 - Send a link to your `App.jsx` file to your personal Slack channel (for example #fe_apr22_misha_hrynko)
