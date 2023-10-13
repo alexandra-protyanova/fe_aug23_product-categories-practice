@@ -121,7 +121,7 @@ export const App = () => {
                   className={cn({ 'is-active': sortUserId === u.id })}
                   key={u.id}
                 >
-                  {`user ${u.id}`}
+                  {u.name}
                 </a>
               ))}
             </p>
@@ -184,7 +184,7 @@ export const App = () => {
                     }
                   }}
                 >
-                  {`category ${category.id}`}
+                  {category.title}
                 </a>
               ))}
             </div>
