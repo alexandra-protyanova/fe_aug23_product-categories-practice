@@ -11,19 +11,6 @@ const FilterUsersPanel = ({ setCurrentList, currentList, products }) => {
     setCurrentList(filter);
   };
 
-  // const handlerFilterByName = (userId) => {
-  //   if (filterByName === userId) {
-  //     setFilterByName(null);
-  //     setCurrentList(products);
-  //   } else {
-  //     const filterName = currentList.filter(item => item.user
-  //       && item.user.id === userId);
-
-  //     setFilterByName(userId);
-  //     setCurrentList(filterName);
-  //   }
-  // };
-
   const handlerShowAll = () => {
     setCurrentList(products);
   };

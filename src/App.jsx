@@ -25,17 +25,7 @@ const products = productsFromServer.map((product) => {
 
 export const App = () => {
   const [currentList, setCurrentList] = useState([...products]);
-  // const [isSorting, setIsSorting] = useState('');
   const [query, setQuery] = useState('');
-  // const inputSymbols = query.trim().toLowerCase();
-
-  // const filterSearch = currentList.filter((message) => {
-  //   const findPeople = message.name.includes(inputSymbols);
-
-  //   return findPeople;
-  // });
-
-  // console.log(currentList);
 
   return (
     <div className="section">
