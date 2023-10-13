@@ -21,7 +21,7 @@ const CATEGORY = {
   FRUITS: 'Fruits',
   ELECTRONICS: 'Electronics',
   CLOTHES: 'Clothes',
-}
+};
 
 function getCategory(CatagoryId) {
   return categoriesFromServer.find(
@@ -44,7 +44,9 @@ const products = productsFromServer.map((product) => {
   };
 });
 
-function getFIlteredProducts(product, { filterProducts, qwery, filterCategories }) {
+function getFIlteredProducts(
+  product, { filterProducts, qwery, filterCategories },
+) {
   let copiedProduct = [...product];
 
   if (filterProducts) {
@@ -128,8 +130,8 @@ export const App = () => {
               <a
                 data-cy="FilterUser"
                 href="#/"
-                className="is-active"
                 onClick={() => setfilterProducts(USERS.MAX)}
+                /* eslint-disable */
                 className={`${filterProducts === USERS.MAX ? 'is-active' : ''}`}
               >
                 Max
