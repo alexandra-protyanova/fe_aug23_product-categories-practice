@@ -1,5 +1,4 @@
 /* eslint-disable jsx-a11y/accessible-emoji */
-import React from 'react';
 import './App.scss';
 import cn from 'classnames';
 import { useState } from 'react';
@@ -39,14 +38,22 @@ const getFilteredByUser = (byUser, products) => {
   return filteredProducts.filter(product => product.user.name === byUser);
 };
 
-const getFilteredByProductName = (byProductName, products) => {
-  const filteredProducts = [...products];
-
-  if (!byProductName) {
-    return filteredProducts;
+const getFilteredByProductName = (byProductName, products = []) => {
+  if (!byProductName || products.length === 0) {
+    return products;
   }
 
-  return filteredProducts.filter(product => product.name.toLowerCase().includes(byProductName.toLowerCase()));
+  const preparedProductName = byProductName.toLowerCase();
+
+  const returnedProducts = products.filter((product) => {
+    if (product.name) {
+      return product.name.toLowerCase().includes(preparedProductName);
+    }
+
+    return false;
+  });
+
+  return returnedProducts;
 };
 
 export const App = () => {
