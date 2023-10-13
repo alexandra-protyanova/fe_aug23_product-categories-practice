@@ -26,6 +26,13 @@ const products = productsFromServer.map((product) => {
 export const App = () => {
   const [currentList, setCurrentList] = useState([...products]);
   const [query, setQuery] = useState('');
+  const inputSymbols = query.trim().toLowerCase();
+
+  const searchInput = currentList.filter((elem) => {
+    const findObj = elem.name.trim().toLowerCase().includes(inputSymbols);
+
+    return findObj;
+  });
 
   return (
     <div className="section">
@@ -65,6 +72,7 @@ export const App = () => {
                     data-cy="ClearButton"
                     type="button"
                     className="delete"
+                    onClick={() => setQuery('')}
                   />
                 </span>
               </p>
@@ -78,37 +86,17 @@ export const App = () => {
               >
                 All
               </a>
+              {categoriesFromServer.map(category => (
+                <a
+                  key={category.id}
+                  data-cy="Category"
+                  className="button mr-2 my-1 is-info"
+                  href="#/"
+                >
+                  {category.title}
+                </a>
+              ))}
 
-              <a
-                data-cy="Category"
-                className="button mr-2 my-1 is-info"
-                href="#/"
-              >
-                Category 1
-              </a>
-
-              <a
-                data-cy="Category"
-                className="button mr-2 my-1"
-                href="#/"
-              >
-                Category 2
-              </a>
-
-              <a
-                data-cy="Category"
-                className="button mr-2 my-1 is-info"
-                href="#/"
-              >
-                Category 3
-              </a>
-              <a
-                data-cy="Category"
-                className="button mr-2 my-1"
-                href="#/"
-              >
-                Category 4
-              </a>
             </div>
 
             <div className="panel-block">
@@ -124,7 +112,7 @@ export const App = () => {
         </div>
 
         <div className="box table-container">
-          {currentList.length === 0 && (
+          {searchInput.length === 0 && (
             <p data-cy="NoMatchingMessage">
               No products matching selected criteria
             </p>
@@ -133,7 +121,7 @@ export const App = () => {
             data-cy="ProductTable"
             className="table is-striped is-narrow is-fullwidth"
           >
-            {currentList.length > 0 && (
+            {searchInput.length > 0 && (
               <thead>
                 <tr>
                   <th>
@@ -187,8 +175,8 @@ export const App = () => {
               </thead>
             )}
             <tbody>
-              {currentList.map(product => (
-                <Product product={product} />
+              {searchInput.map(product => (
+                <Product key={product.id} product={product} />
               ))}
             </tbody>
           </table>

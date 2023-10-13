@@ -1,7 +1,7 @@
 import React from 'react';
 import usersFromServer from '../api/users';
 
-const FilterUsersPanel = ({ setCurrentList, currentList, products }) => {
+const FilterUsersPanel = ({ setCurrentList, products }) => {
   const filterUserId = (userId) => {
     const cloneList = [...products];
 
@@ -27,6 +27,7 @@ const FilterUsersPanel = ({ setCurrentList, currentList, products }) => {
       </a>
       {usersFromServer.map(user => (
         <a
+          key={user.id}
           data-cy="FilterUser"
           href="#/"
           onClick={() => filterUserId(user.id)}
