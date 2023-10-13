@@ -83,6 +83,7 @@ export const App = () => {
                   type="text"
                   className="input"
                   placeholder="Search"
+                  value={query}
                   onChange={event => setQuery(event.target.value.trim())}
                 />
 
@@ -96,7 +97,7 @@ export const App = () => {
                       data-cy="ClearButton"
                       type="button"
                       className="delete"
-                      onClick={event => setQuery('')}
+                      onClick={() => setQuery('')}
                     />
                   </span>
                 )}
