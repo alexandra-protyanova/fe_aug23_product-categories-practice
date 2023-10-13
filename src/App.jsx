@@ -14,8 +14,8 @@ const products = productsFromServer.map((product) => {
 
   return {
     ...product,
-    category: category,
-    user: user,
+    category,
+    user,
   };
 });
 
@@ -39,10 +39,12 @@ export const App = () => {
   const [newCategory, setNewCategory] = useState('');
   const [newUser, setNewUser] = useState('');
 
-  console.log(newUser, newCategory);
+  // console.log(newUser, newCategory);
 
   // console.log(getFilteredByCategory('Grocery'));
   // console.log(getFilteredByUser('Anna'));
+  const filteredByCategory = getFilteredByCategory(newCategory);
+  const filteredByUser = getFilteredByUser(newUser);
 
   // const getFilteredProducts = (categoryType, userName) => {
   //   let array = [...products];
@@ -59,9 +61,10 @@ export const App = () => {
   // };
 
   // const receivedProducts = getFilteredByUser(newUser);
-  const receivedProducts = getFilteredByCategory(newCategory);
+  const receivedProducts = filteredByCategory
+    .filter(product => filteredByUser.includes(product));
 
-  console.log(receivedProducts);
+  // console.log(receivedProducts);
 
   return (
     <div className="section">
