@@ -27,15 +27,17 @@ export const App = () => {
   const [selectedCategory, setSelectedCategory] = useState([]);
 
   function filterProducts(allProducts) {
-    const result = [...allProducts];
+    let result = [...allProducts];
 
     if (currentUserId !== '') {
-      result.filter(product => product.user.id === currentUserId);
+      result = result.filter(product => product.user.id === currentUserId);
     }
 
     if (searchValue !== '') {
-      result.filter(product => product.name.toLocaleLowerCase().trim().includes(
-        searchValue.toLocaleLowerCase().trim(),
+      result = result.filter(product => (
+        product.name.toLocaleLowerCase().trim().includes(
+          searchValue.toLocaleLowerCase().trim(),
+        )
       ));
     }
 
@@ -120,7 +122,7 @@ export const App = () => {
                   'is-success',
                   'mr-6',
                   'is-outlined',
-                  { 'is-outlined': selectedCategory === '' },
+                  { 'is-outlined': selectedCategory.length < 0 },
                 )}
                 onClick={() => setSelectedCategory([])}
               >
@@ -136,15 +138,15 @@ export const App = () => {
                     'mr-2',
                     'my-1',
                     'is-info',
-                    // { 'is-info': selectedCategory.includes(category.title) },
+                    { 'is-info': selectedCategory.includes(category.title) },
                   )}
-                // onClick={() => setSelectedCategory((categories) => {
-                //   const index = selectedCategory.indexOf(category.title);
+                  onClick={() => setSelectedCategory((categories) => {
+                    const index = selectedCategory.indexOf(category.title);
 
-                //   return (index > -1)
-                //     ? categories.slice(index, 1)
-                //     : categories.push(category.title);
-                // })}
+                    return (index > -1)
+                      ? categories.slice(index, 1)
+                      : [...categories, category.title];
+                  })}
                 >
                   {category.title}
                 </a>
