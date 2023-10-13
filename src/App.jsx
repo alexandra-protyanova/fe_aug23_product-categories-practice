@@ -1,17 +1,18 @@
 /* eslint-disable jsx-a11y/accessible-emoji */
+import React, { useState } from 'react';
 import './App.scss';
 import cn from 'classnames';
-import { useState } from 'react';
 
 import usersFromServer from './api/users';
 import categoriesFromServer from './api/categories';
 import productsFromServer from './api/products';
 
 const FILTERBYSEX = {
-  ALL: 'all',
   M: 'm',
   F: 'f',
 };
+
+const DEFAULT_CATEGORY = 'ALL';
 
 const getPreparedProducts = () => {
   const products = productsFromServer.map((product) => {
@@ -56,22 +57,42 @@ const getFilteredByProductName = (byProductName, products = []) => {
   return returnedProducts;
 };
 
+const getFilteredByCategory = (byCategory, products) => {
+  if (byCategory[0] === DEFAULT_CATEGORY) {
+    return products;
+  }
+
+  return products.filter(product => byCategory.some(category => category === product.category.title));
+};
+
 export const App = () => {
   const [byUser, setByUser] = useState('');
   const [byProductName, setByProductName] = useState('');
-  const [byCategory, setByCategory] = useState(['ALL']);
+  const [byCategory, setByCategory] = useState([DEFAULT_CATEGORY]);
+
   const preparedProducts = getPreparedProducts();
   const filteredByProductName = getFilteredByProductName(
     byProductName,
     preparedProducts,
   );
-  const productsToDisplay = getFilteredByUser(byUser, filteredByProductName);
+
+  const filteredCategory = getFilteredByCategory(
+    byCategory,
+    filteredByProductName,
+  );
+  const productsToDisplay = getFilteredByUser(byUser, filteredCategory);
   const noResults = productsToDisplay.length === 0;
 
   const resetHandler = () => {
     setByUser('');
     setByProductName('');
     setByCategory(['ALL']);
+  };
+
+  const handleCategory = (newCategory) => {
+    const noALL = byCategory.filter(cat => cat !== 'ALL');
+
+    setByCategory([...noALL, newCategory]);
   };
 
   return (
@@ -143,9 +164,11 @@ export const App = () => {
                 href="#/"
                 data-cy="AllCategories"
                 className={cn({
-                  'button is-success mr-6 is-outlined': byCategory === ['ALL'],
+                  'button is-success is-info mr-6 is-outlined':
+                    byCategory === [DEFAULT_CATEGORY],
+                  'button mr-6': true,
                 })}
-                onClick={() => setByCategory(['ALL'])}
+                onClick={() => setByCategory([DEFAULT_CATEGORY])}
               >
                 All
               </a>
@@ -154,11 +177,14 @@ export const App = () => {
                 <a
                   data-cy="Category"
                   className={cn({
-                    'is-info': byCategory.find(x => x === category.title),
+                    'is-info button mr-2 my-1': byCategory.find(
+                      x => x === category.title,
+                    ),
+                    'button mr-2 my-1': true,
                   })}
                   href="#/"
                   key={category.id}
-                  onClick={() => setByCategory([...byCategory, category.title])}
+                  onClick={() => handleCategory(category.title)}
                 >
                   {category.title}
                 </a>
