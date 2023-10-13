@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/accessible-emoji */
 import React, { useState } from 'react';
 import './App.scss';
-
+import cn from 'classnames';
 import usersFromServer from './api/users';
 import categoriesFromServer from './api/categories';
 import productsFromServer from './api/products';
@@ -23,14 +23,7 @@ const products = productscategories.map(product => (
   { ...product, user: getUserById(product.category.ownerId) }
 ));
 
-// const products = productsFromServer.map((product) => {
-//   const category = null; // find by product.categoryId
-//   const user = null; // find by category.ownerId
-
-//   return null;
-// });
-
-function getPreparedProducts(productss, name, query) {
+function getPreparedProducts(productss, name, query, category) {
   let preparedProducts = [...productss];
 
   if (name) {
@@ -44,13 +37,21 @@ function getPreparedProducts(productss, name, query) {
 
   );
 
+  if (category.length > 0) {
+    preparedProducts
+    = preparedProducts.filter(
+        product => category.includes(product.category.title),
+      );
+  }
+
   return preparedProducts;
 }
 
 export const App = () => {
-  const [name, setName] = useState('');
+  const [name, setName] = useState(false);
   const [query, setQuery] = useState('');
-  const displayProducts = getPreparedProducts(products, name, query);
+  const [category, setCategory] = useState([]);
+  const displayProducts = getPreparedProducts(products, name, query, category);
 
   return (
     <div className="section">
@@ -62,15 +63,17 @@ export const App = () => {
 
             <p className="panel-tabs has-text-weight-bold">
               <a
+                className={cn({ 'is-active': !name })}
                 data-cy="FilterAllUsers"
                 href="#/"
-                onClick={() => setName('')}
+                onClick={() => setName()}
               >
                 All
               </a>
               {
                 usersFromServer.map(user => (
                   <a
+                    className={cn({ 'is-active': name === user.name })}
                     data-cy="FilterUser"
                     href="#/"
                     onClick={() => {
@@ -87,6 +90,7 @@ export const App = () => {
             <div className="panel-block">
               <p className="control has-icons-left has-icons-right">
                 <input
+                  value={query}
                   data-cy="SearchField"
                   type="text"
                   className="input"
@@ -101,11 +105,19 @@ export const App = () => {
 
                 <span className="icon is-right">
                   {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
-                  <button
-                    data-cy="ClearButton"
-                    type="button"
-                    className="delete"
-                  />
+                  {
+                    query
+                    && (
+
+                      <button
+                        onClick={() => setQuery('')}
+                        data-cy="ClearButton"
+                        type="button"
+                        className="delete"
+                      />
+                    )
+                  }
+
                 </span>
               </p>
             </div>
@@ -114,18 +126,26 @@ export const App = () => {
               <a
                 href="#/"
                 data-cy="AllCategories"
-                className="button is-success mr-6 is-outlined"
+                className={cn('button', 'is-success', 'mr-6',
+                  { 'is-outlined': category.length > 0 })}
+                onClick={() => setCategory([])}
               >
                 All
               </a>
               {
-                categoriesFromServer.map(category => (
+                categoriesFromServer.map(categoryy => (
                   <a
                     data-cy="Category"
-                    className="button mr-2 my-1 is-info"
+                    className={cn('button mr-2', 'my-1',
+                      { 'is-info': category.includes(categoryy.title) })}
                     href="#/"
+                    onClick={() => setCategory(
+                      (category.includes(categoryy.title))
+                        ? category.filter(cat => cat !== categoryy.title)
+                        : [...category, categoryy.title],
+                    )}
                   >
-                    {category.title}
+                    {categoryy.title}
                   </a>
                 ))
               }
@@ -136,6 +156,13 @@ export const App = () => {
                 data-cy="ResetAllButton"
                 href="#/"
                 className="button is-link is-outlined is-fullwidth"
+                onClick={
+                  () => {
+                    setCategory([]);
+                    setName(false);
+                    setQuery('');
+                  }
+                }
               >
                 Reset all filters
               </a>
@@ -144,9 +171,14 @@ export const App = () => {
         </div>
 
         <div className="box table-container">
-          <p data-cy="NoMatchingMessage">
-            No products matching selected criteria
-          </p>
+          {
+            displayProducts.length === 0
+            && (
+            <p data-cy="NoMatchingMessage">
+              No products matching selected criteria
+            </p>
+            )
+          }
 
           <table
             data-cy="ProductTable"
