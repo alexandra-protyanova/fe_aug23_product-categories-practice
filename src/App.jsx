@@ -29,7 +29,7 @@ const filterProducts = (goods, query, categories, user) => {
 
   if (query) {
     goodsArray = goodsArray.filter(good => good.product.name
-      .toLowerCase().includes(query.toLowerCase()));
+      .toLowerCase().includes(query.toLowerCase().trim()));
   }
 
   if (categories.length !== 0) {
