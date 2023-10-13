@@ -38,7 +38,7 @@
   },
   "scripts": {
     "start": "mate-scripts start -l",
-    "build": "mate-scripts build",
+    "build": "react-scripts build",
     "test": "mate-scripts test -l",
     "lint-js": "mate-scripts lint -j",
     "lint-css": "mate-scripts lint -s",
@@ -46,7 +46,7 @@
     "update": "mate-scripts update",
     "postinstall": "npm run update && cypress verify",
     "predeploy": "npm run build",
-    "deploy": "mate-scripts deploy"
+    "deploy": "gh-pages -d build"
   },
   "browserslist": {
     "production": [
