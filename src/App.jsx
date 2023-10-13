@@ -25,9 +25,15 @@ export const combinedProducts = productsFromServer.map(product => ({
 export const App = () => {
   const [owner, setOwner] = useState(null);
   const [products] = useState(combinedProducts);
-  // const [query, setQuery] = useState('');
+  const [filterBy, setFilterBy] = useState('');
 
   const filteredProducts = products.filter((product) => {
+    if (filterBy) {
+      if (!product.name.toLowerCase().includes(filterBy.toLowerCase())) {
+        return false;
+      }
+    }
+
     if (owner === null) {
       return product;
     }
@@ -86,9 +92,9 @@ export const App = () => {
                   type="text"
                   className="input"
                   placeholder="Search"
-                  // onChange={(event) => {
-                  //   filterBy(event.target.value);
-                  // }}
+                  onChange={(event) => {
+                    setFilterBy(event.target.value);
+                  }}
                 />
 
                 <span className="icon is-left">
