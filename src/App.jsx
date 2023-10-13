@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/accessible-emoji */
 import { useState } from 'react';
 import './App.scss';
 import cn from 'classnames';
@@ -13,11 +12,14 @@ function getCategory(categoryId) {
 }
 
 function getUser(categoryId) {
-  const category = categoriesFromServer.find(category => category.id === categoryId)
+  const category = categoriesFromServer
+    .find(categor => categor.id === categoryId);
+
   return usersFromServer.find(user => user.id === category.ownerId)
     || null;
 }
-const products = productsFromServer.map((product) => ({
+
+const products = productsFromServer.map(product => ({
   ...product,
   category: getCategory(product.categoryId),
   user: getUser(product.categoryId),
@@ -32,7 +34,7 @@ function preparedArray(array, filterBy, categoryBy, queryBy) {
 
       return user.name === filterBy;
     });
-  };
+  }
 
   if (categoryBy !== '') {
     copy = copy.filter((el) => {
@@ -40,7 +42,7 @@ function preparedArray(array, filterBy, categoryBy, queryBy) {
 
       return category.name === categoryBy;
     });
-  };
+  }
 
   if (queryBy !== '') {
     copy = copy.filter(el => el.name.toLowerCase()
@@ -66,7 +68,7 @@ export const App = () => {
           <nav className="panel">
             <p className="panel-heading">Filters</p>
 
-             <p className="panel-tabs has-text-weight-bold">
+            <p className="panel-tabs has-text-weight-bold">
               <a
                 data-cy="FilterAllUsers"
                 href="#/"
@@ -74,18 +76,18 @@ export const App = () => {
               >
                 All
               </a>
-              {usersFromServer.map(user =>
-              (<>
-                <a
-                  data-cy="FilterUser"
-                  href="#/"
-                  className={cn({'is-active': user.name === selectedUser,})}
-                  key={user.id}
-                  onClick={() => setSelectedUser(user.name)}
-                >
-                  {user.name}
-                </a>
-              </>
+              {usersFromServer.map(user => (
+                <>
+                  <a
+                    data-cy="FilterUser"
+                    href="#/"
+                    className={cn({ 'is-active': user.name === selectedUser })}
+                    key={user.id}
+                    onClick={() => setSelectedUser(user.name)}
+                  >
+                    {user.name}
+                  </a>
+                </>
               ))}
 
             </p>
@@ -101,27 +103,27 @@ export const App = () => {
                   onChange={e => setQuery(e.target.value)}
                 />
 
-                  <span className="icon is-left"
+                <span className="icon is-left">
+                  <i className="fas fa-search" aria-hidden="true" />
+                </span>
 
-                  >
-                    <i className="fas fa-search" aria-hidden="true" />
-                  </span>
-
-              {query &&
+                {query
+                && (
                 <span className="icon is-right">
-                   <button
+                  <button
                     data-cy="ClearButton"
                     type="button"
                     className="delete"
-                    onclick={() => setQuery('')}
+                    onClick={() => setQuery('')}
                   />
-                </span>}
+                </span>
+                )}
 
               </p>
             </div>
 
             <div className="panel-block is-flex-wrap-wrap">
-            <a
+              <a
                 href="#/"
                 data-cy="AllCategories"
                 className="button is-success mr-6 is-outlined"
@@ -131,18 +133,17 @@ export const App = () => {
               </a>
               {categoriesFromServer.map(category => (
                 <a
-                data-cy="Category"
-                className="button mr-2 my-1 is-info"
-                href="#/"
-                key={category.id}
-                onClick={() => setSelectedCategory(category.title)}
-              >
-                {category.title}
-              </a>
-              )
-                )}
+                  data-cy="Category"
+                  className="button mr-2 my-1 is-info"
+                  href="#/"
+                  key={category.id}
+                  onClick={() => setSelectedCategory(category.title)}
+                >
+                  {category.title}
+                </a>
+              ))}
 
-              </div>
+            </div>
 
             <div className="panel-block">
               <a
@@ -229,7 +230,11 @@ export const App = () => {
                       </td>
 
                       <td data-cy="ProductName">{name}</td>
-                      <td data-cy="ProductCategory">{category.icon}-{category.title}</td>
+                      <td data-cy="ProductCategory">
+                        {category.icon}
+                        -
+                        {category.title}
+                      </td>
 
                       <td
                         data-cy="ProductUser"
