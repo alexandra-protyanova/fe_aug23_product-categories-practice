@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/accessible-emoji */
-import React from 'react';
+import React, { useState } from 'react';
 import './App.scss';
 
 import usersFromServer from './api/users';
@@ -24,8 +24,18 @@ export const newProducts = productsFromServer.map(item => ({
     : null,
 }));
 
-export const App = () =>
-  console.log(newProducts) || (
+export const App = () => {
+  // console.log(newProducts);
+
+  const [selectedUser, setSelectedUser] = useState('all');
+
+  const filtredByUser = selectedUser === 'all'
+    ? newProducts
+    : newProducts.filter(prod => prod.owner.name === selectedUser);
+
+  // console.log(filtredByUser);
+
+  return (
     <div className="section">
       <div className="container">
         <h1 className="title">Product Categories</h1>
@@ -35,21 +45,30 @@ export const App = () =>
             <p className="panel-heading">Filters</p>
 
             <p className="panel-tabs has-text-weight-bold">
-              <a data-cy="FilterAllUsers" href="#/">
+              <a
+                data-cy="FilterAllUsers"
+                href="#/"
+                className={selectedUser === 'all' ? 'is-active' : ''}
+                onClick={() => setSelectedUser('all')}
+              >
                 All
               </a>
 
-              <a data-cy="FilterUser" href="#/">
-                User 1
-              </a>
+              {usersFromServer.map(user => (
+                <a
+                  data-cy="FilterUser"
+                  href="#/"
+                  key={user.id}
+                  className={selectedUser === user.name ? 'is-active' : ''}
+                  onClick={() => setSelectedUser(user.name)}
+                >
+                  {user.name}
+                </a>
+              ))}
 
-              <a data-cy="FilterUser" href="#/" className="is-active">
+              {/* <a data-cy="FilterUser" href="#/" className="is-active">
                 User 2
-              </a>
-
-              <a data-cy="FilterUser" href="#/">
-                User 3
-              </a>
+              </a> */}
             </p>
 
             <div className="panel-block">
@@ -180,8 +199,8 @@ export const App = () =>
             </thead>
 
             <tbody>
-              {newProducts.map((prod) => (
-                <tr data-cy="Product">
+              {filtredByUser.map(prod => (
+                <tr data-cy="Product" key={prod.id}>
                   <td className="has-text-weight-bold" data-cy="ProductId">
                     {prod.id}
                   </td>
@@ -191,17 +210,20 @@ export const App = () =>
 
                   <td
                     data-cy="ProductUser"
-                    className={prod.owner.sex === 'm'
-                      ? 'has-text-link' : 'has-text-danger'}
+                    className={
+                      prod.owner.sex === 'm'
+                        ? 'has-text-link'
+                        : 'has-text-danger'
+                    }
                   >
                     {prod.owner.name}
                   </td>
                 </tr>
               ))}
-
             </tbody>
           </table>
         </div>
       </div>
     </div>
   );
+};
