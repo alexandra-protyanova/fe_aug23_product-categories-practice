@@ -1,30 +1,41 @@
 /* eslint-disable jsx-a11y/accessible-emoji */
 import React, { useState } from 'react';
 import './App.scss';
-import { getCategoryId, getUseryId } from './utils/functions';
 import productsFromServer from './api/products';
 import Product from './components/Product';
 import FilterUsersPanel from './components/FilterUsersPanel';
+import usersFromServer from './api/users';
+import categoriesFromServer from './api/categories';
 
-const products = productsFromServer.map(product => ({
-  ...product,
-  category: getCategoryId(product.categoryId),
-  user: getUseryId(product.id),
-}));
+const products = productsFromServer.map((product) => {
+  const categories = categoriesFromServer.find(
+    category => category.id === product.categoryId,
+  ) || null;
+
+  const user = usersFromServer.find(
+    u => u.id === categories.ownerId,
+  ) || null;
+
+  return {
+    ...product,
+    categories,
+    user,
+  };
+});
 
 export const App = () => {
-  const [currentList, setCurrentList] = useState(products);
-  const [isSorting, setIsSorting] = useState('');
+  const [currentList, setCurrentList] = useState([...products]);
+  // const [isSorting, setIsSorting] = useState('');
   const [query, setQuery] = useState('');
-  const inputSymbols = query.trim().toLowerCase();
+  // const inputSymbols = query.trim().toLowerCase();
 
-  const filterSearch = currentList.filter((message) => {
-    const findPeople = message.name.includes(inputSymbols);
+  // const filterSearch = currentList.filter((message) => {
+  //   const findPeople = message.name.includes(inputSymbols);
 
-    return findPeople;
-  });
+  //   return findPeople;
+  // });
 
-  console.log(filterSearch);
+  // console.log(currentList);
 
   return (
     <div className="section">
@@ -123,122 +134,76 @@ export const App = () => {
         </div>
 
         <div className="box table-container">
-          <p data-cy="NoMatchingMessage">
-            No products matching selected criteria
-          </p>
-
+          {currentList.length === 0 && (
+            <p data-cy="NoMatchingMessage">
+              No products matching selected criteria
+            </p>
+          )}
           <table
             data-cy="ProductTable"
             className="table is-striped is-narrow is-fullwidth"
           >
-            <thead>
-              <tr>
-                <th>
-                  <span className="is-flex is-flex-wrap-nowrap">
-                    ID
+            {currentList.length > 0 && (
+              <thead>
+                <tr>
+                  <th>
+                    <span className="is-flex is-flex-wrap-nowrap">
+                      ID
 
-                    <a href="#/">
-                      <span className="icon">
-                        <i data-cy="SortIcon" className="fas fa-sort" />
-                      </span>
-                    </a>
-                  </span>
-                </th>
+                      <a href="#/">
+                        <span className="icon">
+                          <i data-cy="SortIcon" className="fas fa-sort" />
+                        </span>
+                      </a>
+                    </span>
+                  </th>
 
-                <th>
-                  <span className="is-flex is-flex-wrap-nowrap">
-                    Product
+                  <th>
+                    <span className="is-flex is-flex-wrap-nowrap">
+                      Product
 
-                    <a href="#/">
-                      <span className="icon">
-                        <i data-cy="SortIcon" className="fas fa-sort-down" />
-                      </span>
-                    </a>
-                  </span>
-                </th>
+                      <a href="#/">
+                        <span className="icon">
+                          <i data-cy="SortIcon" className="fas fa-sort-down" />
+                        </span>
+                      </a>
+                    </span>
+                  </th>
 
-                <th>
-                  <span className="is-flex is-flex-wrap-nowrap">
-                    Category
+                  <th>
+                    <span className="is-flex is-flex-wrap-nowrap">
+                      Category
 
-                    <a href="#/">
-                      <span className="icon">
-                        <i data-cy="SortIcon" className="fas fa-sort-up" />
-                      </span>
-                    </a>
-                  </span>
-                </th>
+                      <a href="#/">
+                        <span className="icon">
+                          <i data-cy="SortIcon" className="fas fa-sort-up" />
+                        </span>
+                      </a>
+                    </span>
+                  </th>
 
-                <th>
-                  <span className="is-flex is-flex-wrap-nowrap">
-                    User
+                  <th>
+                    <span className="is-flex is-flex-wrap-nowrap">
+                      User
 
-                    <a href="#/">
-                      <span className="icon">
-                        <i data-cy="SortIcon" className="fas fa-sort" />
-                      </span>
-                    </a>
-                  </span>
-                </th>
-              </tr>
-            </thead>
-
+                      <a href="#/">
+                        <span className="icon">
+                          <i data-cy="SortIcon" className="fas fa-sort" />
+                        </span>
+                      </a>
+                    </span>
+                  </th>
+                </tr>
+              </thead>
+            )}
             <tbody>
               {currentList.map(product => (
                 <Product product={product} />
               ))}
-
-              {/* <tr data-cy="Product">
-              <td className="has-text-weight-bold" data-cy="ProductId">
-                1
-              </td>
-
-              <td data-cy="ProductName">Milk</td>
-              <td data-cy="ProductCategory">🍺 - Drinks</td>
-
-              <td
-                data-cy="ProductUser"
-                className="has-text-link"
-              >
-                Max
-              </td>
-            </tr>
-
-            <tr data-cy="Product">
-              <td className="has-text-weight-bold" data-cy="ProductId">
-                2
-              </td>
-
-              <td data-cy="ProductName">Bread</td>
-              <td data-cy="ProductCategory">🍞 - Grocery</td>
-
-              <td
-                data-cy="ProductUser"
-                className="has-text-danger"
-              >
-                Anna
-              </td>
-            </tr>
-
-            <tr data-cy="Product">
-              <td className="has-text-weight-bold" data-cy="ProductId">
-                3
-              </td>
-
-              <td data-cy="ProductName">iPhone</td>
-              <td data-cy="ProductCategory">💻 - Electronics</td>
-
-              <td
-                data-cy="ProductUser"
-                className="has-text-link"
-              >
-                Roma
-              </td>
-            </tr> */}
             </tbody>
           </table>
         </div>
       </div>
     </div>
-  )
+  );
 };

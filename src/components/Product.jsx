@@ -1,7 +1,7 @@
 import React from 'react';
 
 const Product = ({ product }) => {
-  const { id, name, category, user } = product;
+  const { id, name, categories, user } = product;
   let classForUserSex = '';
 
   if (user) {
@@ -23,7 +23,7 @@ const Product = ({ product }) => {
       </td>
 
       <td data-cy="ProductCategory">
-        {`${category[0].icon} - ${category[0].title}`}
+        {`${categories && categories.icon} - ${categories && categories.title}`}
       </td>
 
       <td

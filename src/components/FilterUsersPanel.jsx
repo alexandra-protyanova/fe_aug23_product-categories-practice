@@ -1,26 +1,32 @@
-import React, { useState } from 'react';
+import React from 'react';
 import usersFromServer from '../api/users';
 
-const FilterUsersPanel = ({ currentList, setCurrentList, products }) => {
-  const [filterByName, setFilterByName] = useState(null);
+const FilterUsersPanel = ({ setCurrentList, currentList, products }) => {
+  const filterUserId = (userId) => {
+    const cloneList = [...products];
 
-  const handlerFilterByName = (userId) => {
-    if (filterByName === userId) {
-      setFilterByName(null);
-      setCurrentList(products);
-    } else {
-      const filterName = currentList.filter(item => item.user
-        && item.user.id === userId);
+    const filter = cloneList.filter(item => item.user
+      && item.user.id === userId);
 
-      setFilterByName(userId);
-      setCurrentList(filterName);
-    }
+    setCurrentList(filter);
   };
+
+  // const handlerFilterByName = (userId) => {
+  //   if (filterByName === userId) {
+  //     setFilterByName(null);
+  //     setCurrentList(products);
+  //   } else {
+  //     const filterName = currentList.filter(item => item.user
+  //       && item.user.id === userId);
+
+  //     setFilterByName(userId);
+  //     setCurrentList(filterName);
+  //   }
+  // };
 
   const handlerShowAll = () => {
     setCurrentList(products);
   };
-  // user.user.id === userId
 
   return (
 
@@ -36,7 +42,7 @@ const FilterUsersPanel = ({ currentList, setCurrentList, products }) => {
         <a
           data-cy="FilterUser"
           href="#/"
-          onClick={() => handlerFilterByName(user.id)}
+          onClick={() => filterUserId(user.id)}
         >
           {user.name}
         </a>
