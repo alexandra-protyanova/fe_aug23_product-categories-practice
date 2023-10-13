@@ -43,8 +43,19 @@ function getProductsByInput(goods, input) {
     return inputProducts;
   }
 
-  return inputProducts.filter(product => product.name
-    .toLowerCase().includes(lowerInput));
+  return inputProducts
+    .filter(product => product.name.toLowerCase().includes(lowerInput));
+}
+
+function getProductsByCategory(goods, category) {
+  const categoryProducts = [...goods];
+
+  if (category === '') {
+    return categoryProducts;
+  }
+
+  return categoryProducts
+    .filter(product => product.category.title === category);
 }
 
 // const products = productsFromServer.map((product) => {
@@ -57,8 +68,10 @@ function getProductsByInput(goods, input) {
 export const App = () => {
   const [filter, setFilter] = useState('');
   const [input, setInput] = useState('');
+  const [category, setCategory] = useState('');
   const filteredProducts = getFilteredProducts(productsWithUsers, filter);
   const inputProducts = getProductsByInput(filteredProducts, input);
+  const categoryProducts = getProductsByCategory(inputProducts, category);
 
   return (
     <div className="section">
@@ -129,32 +142,23 @@ export const App = () => {
                 href="#/"
                 data-cy="AllCategories"
                 className="button is-success mr-6 is-outlined"
+                onClick={() => setCategory('')}
               >
                 All
               </a>
-
-              <a
-                data-cy="Category"
-                className="button mr-2 my-1 is-info"
-                href="#/"
-              >
-                Category 1
-              </a>
-
-              <a data-cy="Category" className="button mr-2 my-1" href="#/">
-                Category 2
-              </a>
-
-              <a
-                data-cy="Category"
-                className="button mr-2 my-1 is-info"
-                href="#/"
-              >
-                Category 3
-              </a>
-              <a data-cy="Category" className="button mr-2 my-1" href="#/">
-                Category 4
-              </a>
+              {categoriesFromServer.map(cat => (
+                <a
+                  key={cat.id}
+                  data-cy="Category"
+                  className={cn('button', 'mr-2', 'my-1', {
+                    'is-info': cat.title === category,
+                  })}
+                  href="#/"
+                  onClick={() => setCategory(cat.title)}
+                >
+                  {cat.title}
+                </a>
+              ))}
             </div>
 
             <div className="panel-block">
@@ -165,6 +169,7 @@ export const App = () => {
                 onClick={() => {
                   setFilter('');
                   setInput('');
+                  setCategory('');
                 }}
               >
                 Reset all filters
@@ -174,7 +179,7 @@ export const App = () => {
         </div>
 
         <div className="box table-container">
-          {inputProducts.length !== 0 ? (
+          {categoryProducts.length !== 0 ? (
             <table
               data-cy="ProductTable"
               className="table is-striped is-narrow is-fullwidth"
@@ -227,7 +232,7 @@ export const App = () => {
                 </tr>
               </thead>
               <tbody>
-                {inputProducts.map(product => (
+                {categoryProducts.map(product => (
                   <tr data-cy="Product" key={product.id}>
                     <td className="has-text-weight-bold" data-cy="ProductId">
                       {product.id}
