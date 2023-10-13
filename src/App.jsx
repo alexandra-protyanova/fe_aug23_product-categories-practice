@@ -1,248 +1,335 @@
 /* eslint-disable jsx-a11y/accessible-emoji */
-import React from 'react';
+import { useState } from 'react';
 import './App.scss';
 
-// import usersFromServer from './api/users';
-// import categoriesFromServer from './api/categories';
-// import productsFromServer from './api/products';
+import usersFromServer from './api/users';
+import categoriesFromServer from './api/categories';
+import productsFromServer from './api/products';
 
-// const products = productsFromServer.map((product) => {
-//   const category = null; // find by product.categoryId
-//   const user = null; // find by category.ownerId
+const USERS = {
+  ALL: 'All',
+  ROMA: 'Roma',
+  ANNA: 'Anna',
+  MAX: 'Max',
+  JOHN: 'John',
+};
 
-//   return null;
-// });
+const CATEGORY = {
+  ALL: 'All',
+  GROCERY: 'Grocery',
+  DRINKS: 'Drinks',
+  FRUITS: 'Fruits',
+  ELECTRONICS: 'Electronics',
+  CLOTHES: 'Clothes',
+}
 
-export const App = () => (
-  <div className="section">
-    <div className="container">
-      <h1 className="title">Product Categories</h1>
+function getCategory(CatagoryId) {
+  return categoriesFromServer.find(
+    categories => categories.id === CatagoryId,
+  ) || null;
+}
 
-      <div className="block">
-        <nav className="panel">
-          <p className="panel-heading">Filters</p>
+function getUser(OwnerId) {
+  return usersFromServer.find(users => users.id === OwnerId);
+}
 
-          <p className="panel-tabs has-text-weight-bold">
-            <a
-              data-cy="FilterAllUsers"
-              href="#/"
-            >
-              All
-            </a>
+const products = productsFromServer.map((product) => {
+  const category = getCategory(product.categoryId); // find by product.categoryId
+  const user = getUser(category.ownerId);// find by category.ownerId
 
-            <a
-              data-cy="FilterUser"
-              href="#/"
-            >
-              User 1
-            </a>
+  return {
+    ...product,
+    category,
+    user,
+  };
+});
 
-            <a
-              data-cy="FilterUser"
-              href="#/"
-              className="is-active"
-            >
-              User 2
-            </a>
+function getFIlteredProducts(product, { filterProducts, qwery, filterCategories }) {
+  let copiedProduct = [...product];
 
-            <a
-              data-cy="FilterUser"
-              href="#/"
-            >
-              User 3
-            </a>
-          </p>
+  if (filterProducts) {
+    if (filterProducts !== USERS.ALL) {
+      copiedProduct = copiedProduct.filter(
+        copieProduct => copieProduct.user.name === filterProducts,
+      );
+    }
+  }
 
-          <div className="panel-block">
-            <p className="control has-icons-left has-icons-right">
-              <input
-                data-cy="SearchField"
-                type="text"
-                className="input"
-                placeholder="Search"
-                value="qwe"
-              />
+  if (qwery) {
+    const normalizedQwery = qwery.toLowerCase();
 
-              <span className="icon is-left">
-                <i className="fas fa-search" aria-hidden="true" />
-              </span>
+    copiedProduct = copiedProduct.filter(
+      copieProduct => copieProduct.name.toLowerCase().includes(normalizedQwery),
+    );
+  }
 
-              <span className="icon is-right">
-                {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
-                <button
-                  data-cy="ClearButton"
-                  type="button"
-                  className="delete"
-                />
-              </span>
-            </p>
-          </div>
+  if (filterCategories) {
+    if (filterCategories !== CATEGORY.ALL) {
+      copiedProduct = copiedProduct.filter(
+        copieProduct => copieProduct.category.title === filterCategories,
+      );
+    }
+  }
 
-          <div className="panel-block is-flex-wrap-wrap">
-            <a
-              href="#/"
-              data-cy="AllCategories"
-              className="button is-success mr-6 is-outlined"
-            >
-              All
-            </a>
+  return copiedProduct;
+}
 
-            <a
-              data-cy="Category"
-              className="button mr-2 my-1 is-info"
-              href="#/"
-            >
-              Category 1
-            </a>
+export const App = () => {
+  const [filterProducts, setfilterProducts] = useState(USERS.ALL);
+  const [qwery, setQwery] = useState('');
+  const [filterCategories, setFilterCategories] = useState(CATEGORY.ALL);
 
-            <a
-              data-cy="Category"
-              className="button mr-2 my-1"
-              href="#/"
-            >
-              Category 2
-            </a>
+  const handleReset = () => {
+    setfilterProducts('');
+    setQwery('');
+    setFilterCategories('');
+  };
 
-            <a
-              data-cy="Category"
-              className="button mr-2 my-1 is-info"
-              href="#/"
-            >
-              Category 3
-            </a>
-            <a
-              data-cy="Category"
-              className="button mr-2 my-1"
-              href="#/"
-            >
-              Category 4
-            </a>
-          </div>
+  const filteredProducts = getFIlteredProducts(
+    products, { filterProducts, qwery, filterCategories },
+  );
 
-          <div className="panel-block">
-            <a
-              data-cy="ResetAllButton"
-              href="#/"
-              className="button is-link is-outlined is-fullwidth"
-            >
-              Reset all filters
-            </a>
-          </div>
-        </nav>
-      </div>
+  return (
+    <div className="section">
+      <div className="container">
+        <h1 className="title">Product Categories</h1>
+        <div className="block">
+          <nav className="panel">
+            <p className="panel-heading">Filters</p>
 
-      <div className="box table-container">
-        <p data-cy="NoMatchingMessage">
-          No products matching selected criteria
-        </p>
-
-        <table
-          data-cy="ProductTable"
-          className="table is-striped is-narrow is-fullwidth"
-        >
-          <thead>
-            <tr>
-              <th>
-                <span className="is-flex is-flex-wrap-nowrap">
-                  ID
-
-                  <a href="#/">
-                    <span className="icon">
-                      <i data-cy="SortIcon" className="fas fa-sort" />
-                    </span>
-                  </a>
-                </span>
-              </th>
-
-              <th>
-                <span className="is-flex is-flex-wrap-nowrap">
-                  Product
-
-                  <a href="#/">
-                    <span className="icon">
-                      <i data-cy="SortIcon" className="fas fa-sort-down" />
-                    </span>
-                  </a>
-                </span>
-              </th>
-
-              <th>
-                <span className="is-flex is-flex-wrap-nowrap">
-                  Category
-
-                  <a href="#/">
-                    <span className="icon">
-                      <i data-cy="SortIcon" className="fas fa-sort-up" />
-                    </span>
-                  </a>
-                </span>
-              </th>
-
-              <th>
-                <span className="is-flex is-flex-wrap-nowrap">
-                  User
-
-                  <a href="#/">
-                    <span className="icon">
-                      <i data-cy="SortIcon" className="fas fa-sort" />
-                    </span>
-                  </a>
-                </span>
-              </th>
-            </tr>
-          </thead>
-
-          <tbody>
-            <tr data-cy="Product">
-              <td className="has-text-weight-bold" data-cy="ProductId">
-                1
-              </td>
-
-              <td data-cy="ProductName">Milk</td>
-              <td data-cy="ProductCategory">🍺 - Drinks</td>
-
-              <td
-                data-cy="ProductUser"
-                className="has-text-link"
+            <p className="panel-tabs has-text-weight-bold">
+              <a
+                data-cy="FilterAllUsers"
+                href="#/"
+                onClick={() => setfilterProducts(USERS.ALL)}
+                className={`${filterProducts === USERS.ALL ? 'is-active' : ''}`}
               >
-                Max
-              </td>
-            </tr>
+                All
+              </a>
 
-            <tr data-cy="Product">
-              <td className="has-text-weight-bold" data-cy="ProductId">
-                2
-              </td>
-
-              <td data-cy="ProductName">Bread</td>
-              <td data-cy="ProductCategory">🍞 - Grocery</td>
-
-              <td
-                data-cy="ProductUser"
-                className="has-text-danger"
-              >
-                Anna
-              </td>
-            </tr>
-
-            <tr data-cy="Product">
-              <td className="has-text-weight-bold" data-cy="ProductId">
-                3
-              </td>
-
-              <td data-cy="ProductName">iPhone</td>
-              <td data-cy="ProductCategory">💻 - Electronics</td>
-
-              <td
-                data-cy="ProductUser"
-                className="has-text-link"
+              <a
+                data-cy="FilterAllUsers"
+                href="#/"
+                onClick={() => setfilterProducts(USERS.ROMA)}
+                className={`${filterProducts === USERS.ROMA ? 'is-active' : ''}`}
               >
                 Roma
-              </td>
-            </tr>
-          </tbody>
-        </table>
+              </a>
+
+              <a
+                data-cy="FilterUser"
+                href="#/"
+                onClick={() => setfilterProducts(USERS.ANNA)}
+                className={`${filterProducts === USERS.ANNA ? 'is-active' : ''}`}
+              >
+                Anna
+              </a>
+
+              <a
+                data-cy="FilterUser"
+                href="#/"
+                className="is-active"
+                onClick={() => setfilterProducts(USERS.MAX)}
+                className={`${filterProducts === USERS.MAX ? 'is-active' : ''}`}
+              >
+                Max
+              </a>
+
+              <a
+                data-cy="FilterUser"
+                href="#/"
+                onClick={() => setfilterProducts(USERS.JOHN)}
+                className={`${filterProducts === USERS.JOHN ? 'is-active' : ''}`}
+              >
+                John
+              </a>
+            </p>
+
+            <div className="panel-block">
+              <p className="control has-icons-left has-icons-right">
+                <input
+                  data-cy="SearchField"
+                  type="text"
+                  className="input"
+                  placeholder="Search"
+                  value={`${qwery === '' ? '' : qwery}`}
+                  onChange={(event) => {
+                    setQwery(event.target.value);
+                  }}
+                />
+
+                <span className="icon is-left">
+                  <i className="fas fa-search" aria-hidden="true" />
+                </span>
+
+                {qwery && (
+                  <span className="icon is-right">
+                    {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
+                    <button
+                      data-cy="ClearButton"
+                      type="button"
+                      className="delete"
+                      onClick={() => setQwery('')}
+                    />
+                  </span>
+                )}
+              </p>
+            </div>
+
+            <div className="panel-block is-flex-wrap-wrap">
+              <a
+                href="#/"
+                data-cy="AllCategories"
+                className={`button is-success mr-6 ${filterCategories === CATEGORY.ALL ? '' : 'is-outlined'}`}
+                onClick={() => setFilterCategories('')}
+              >
+                All
+              </a>
+
+              <a
+                data-cy="Category"
+                className={`button mr-2 my-1 ${filterCategories === CATEGORY.GROCERY ? 'is-info' : ''}`}
+                href="#/"
+                onClick={() => setFilterCategories(CATEGORY.GROCERY)}
+              >
+                Grocery
+              </a>
+
+              <a
+                data-cy="Category"
+                className={`button mr-2 my-1 ${filterCategories === CATEGORY.DRINKS ? 'is-info' : ''}`}
+                href="#/"
+                onClick={() => setFilterCategories(CATEGORY.DRINKS)}
+              >
+                Drink
+              </a>
+
+              <a
+                data-cy="Category"
+                className={`button mr-2 my-1 ${filterCategories === CATEGORY.FRUITS ? 'is-info' : ''}`}
+                href="#/"
+                onClick={() => setFilterCategories(CATEGORY.FRUITS)}
+              >
+                Fruits
+              </a>
+
+              <a
+                data-cy="Category"
+                className={`button mr-2 my-1 ${filterCategories === CATEGORY.ELECTRONICS ? 'is-info' : ''}`}
+                href="#/"
+                onClick={() => setFilterCategories(CATEGORY.ELECTRONICS)}
+              >
+                Electronics
+              </a>
+
+              <a
+                data-cy="Category"
+                className={`button mr-2 my-1 ${filterCategories === CATEGORY.CLOTHES ? 'is-info' : ''}`}
+                href="#/"
+                onClick={() => setFilterCategories(CATEGORY.CLOTHES)}
+              >
+                Clothes
+              </a>
+            </div>
+
+            <div className="panel-block">
+              <a
+                data-cy="ResetAllButton"
+                href="#/"
+                className="button is-link is-outlined is-fullwidth"
+                onClick={() => handleReset()}
+              >
+                Reset all filters
+              </a>
+            </div>
+          </nav>
+        </div>
+
+        <div className="box table-container">
+          {filteredProducts.length === 0 && (
+            <p data-cy="NoMatchingMessage">
+              No products matching selected criteria
+            </p>
+          )}
+
+          <table
+            data-cy="ProductTable"
+            className="table is-striped is-narrow is-fullwidth"
+          >
+            <thead>
+              <tr>
+                <th>
+                  <span className="is-flex is-flex-wrap-nowrap">
+                    ID
+
+                    <a href="#/">
+                      <span className="icon">
+                        <i data-cy="SortIcon" className="fas fa-sort" />
+                      </span>
+                    </a>
+                  </span>
+                </th>
+
+                <th>
+                  <span className="is-flex is-flex-wrap-nowrap">
+                    Product
+
+                    <a href="#/">
+                      <span className="icon">
+                        <i data-cy="SortIcon" className="fas fa-sort-down" />
+                      </span>
+                    </a>
+                  </span>
+                </th>
+
+                <th>
+                  <span className="is-flex is-flex-wrap-nowrap">
+                    Category
+
+                    <a href="#/">
+                      <span className="icon">
+                        <i data-cy="SortIcon" className="fas fa-sort-up" />
+                      </span>
+                    </a>
+                  </span>
+                </th>
+
+                <th>
+                  <span className="is-flex is-flex-wrap-nowrap">
+                    User
+
+                    <a href="#/">
+                      <span className="icon">
+                        <i data-cy="SortIcon" className="fas fa-sort" />
+                      </span>
+                    </a>
+                  </span>
+                </th>
+              </tr>
+            </thead>
+            {filteredProducts.map(product => (
+              <tbody key={product.id}>
+                <tr data-cy="Product">
+                  <td className="has-text-weight-bold" data-cy="ProductId">
+                    {product.id}
+                  </td>
+
+                  <td data-cy="ProductName">{product.name}</td>
+                  <td data-cy="ProductCategory">
+                    {`${product.category.icon} - ${product.category.title}`}
+                  </td>
+                  <td
+                    data-cy="ProductUser"
+                    className={`has-text-link ${product.user.sex === 'f' ? 'has-text-danger' : 'has-text-link'}`}
+                  >
+                    {product.user.name}
+                  </td>
+                </tr>
+              </tbody>
+            ))}
+          </table>
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
