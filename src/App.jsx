@@ -67,11 +67,11 @@ export const App = () => {
           break;
 
         case SORT_BY_CATEGORY:
-          result  = a.category.title.localeCompare(b.category.title);
+          result = a.category.title.localeCompare(b.category.title);
           break;
 
         case SORT_BY_USER:
-          result  = a.user.name.localeCompare(b.user.name);
+          result = a.user.name.localeCompare(b.user.name);
           break;
 
         default:
@@ -93,6 +93,17 @@ export const App = () => {
     setSort(SORT_BY_ID);
     setReverse(false);
   };
+
+  const handleSort = (sortBy) => {
+    if (sort !== sortBy) {
+      setSort(sortBy);
+    } else if (sort === sortBy && !reverse) {
+      setReverse(true);
+    } else {
+      setSort(SORT_BY_ID);
+      setReverse(false);
+    }
+  }
 
   return (
     <div className="section">
@@ -216,16 +227,7 @@ export const App = () => {
 
                       <a
                         href="#/"
-                        onClick={() => {
-                          if (sort !== SORT_BY_ID) {
-                            setSort(SORT_BY_ID);
-                          } else if (sort === SORT_BY_ID && !reverse) {
-                            setReverse(true);
-                          } else {
-                            setSort(SORT_BY_ID);
-                            setReverse(false);
-                          }
-                        }}
+                        onClick={() => handleSort(SORT_BY_ID)}
                       >
                         <span className="icon">
                           <i
@@ -249,16 +251,7 @@ export const App = () => {
 
                       <a
                         href="#/"
-                        onClick={() => {
-                          if (sort !== SORT_BY_PRODUCT) {
-                            setSort(SORT_BY_PRODUCT);
-                          } else if (sort === SORT_BY_PRODUCT && !reverse) {
-                            setReverse(true);
-                          } else {
-                            setSort(SORT_BY_ID);
-                            setReverse(false);
-                          }
-                        }}
+                        onClick={() => handleSort(SORT_BY_PRODUCT)}
                       >
                         <span className="icon">
                           <i
@@ -283,16 +276,7 @@ export const App = () => {
 
                       <a
                         href="#/"
-                        onClick={() => {
-                          if (sort !== SORT_BY_CATEGORY) {
-                            setSort(SORT_BY_CATEGORY);
-                          } else if (sort === SORT_BY_CATEGORY && !reverse) {
-                            setReverse(true);
-                          } else {
-                            setSort(SORT_BY_ID);
-                            setReverse(false);
-                          }
-                        }}
+                        onClick={() => handleSort(SORT_BY_CATEGORY)}
                       >
                         <span className="icon">
                           <i
@@ -318,14 +302,7 @@ export const App = () => {
                       <a
                         href="#/"
                         onClick={() => {
-                          if (sort !== SORT_BY_USER) {
-                            setSort(SORT_BY_USER);
-                          } else if (sort === SORT_BY_USER && !reverse) {
-                            setReverse(true);
-                          } else {
-                            setSort(SORT_BY_ID);
-                            setReverse(false);
-                          }
+
                         }}
                       >
                         <span className="icon">
