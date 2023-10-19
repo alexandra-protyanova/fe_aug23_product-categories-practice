@@ -1,4 +1,4 @@
-export default [
+export const productsFromServer = [
   {
     id: 1,
     name: 'Milk',
